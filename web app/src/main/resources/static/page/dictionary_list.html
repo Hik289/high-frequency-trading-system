@@ -1,0 +1,178 @@
+<div class="layuimini-container layui-anim layui-anim-upbit">
+    <div class="layuimini-main">
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn"> 添加用户 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn"> 删除用户 </button>
+            </div>
+        </script>
+
+		<button class="layui-btn" type="button" onclick="add();" class="btn btn-success">新增</button>
+        <table class="layui-hide" id="table" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs" lay-event="edit" onclick="edit({{d.id}},'{{d.name}}','{{d.code}}','{{d.describe}}')">编辑</a>
+  			<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="dell({{d.id}})">删除</a>
+        </script>
+    </div>
+</div>
+
+<script>
+var form,table;
+layui.use(['form','table'], function(){
+  table = layui.table;
+  form = layui.form;
+	//第一个实例
+  table.render({
+    elem: '#table'
+    ,url: '/private/dictionary/list' //数据接口
+    ,page: true //开启分页
+    ,cols: [[ //表头
+      {field: 'id', title: 'ID', width:80}
+      ,{field: 'name', title: '名称'}
+      ,{field: 'code', title: '编码'}
+      ,{field: 'describe', title: '描述', width:300}
+      ,{title: '操作',toolbar: '#currentTableBar', width:150}
+    ]]
+  });
+});
+var dell = function(id){
+	if(confirm(" 确定删除吗？")){
+		$.ajax({
+			url:'/private/dictionary/dell',
+			type:'POST',
+			dataType:'json',
+			data:{id:id},
+			success:function(obj){
+				layer.msg(obj.message);
+				if(obj.success){
+					table.reload('table',null);
+				}
+			}
+		});
+	}
+}
+var add = function(){
+	var html = '<div id="edit-div">'+
+					'<form class="layui-form" action="">'+
+						'<div class="layui-form-item">'+
+						    '<label class="layui-form-label">名称</label>'+
+						    '<div class="layui-input-block">'+
+						      '<input type="text" id="name" name="name" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">'+
+						    '</div>'+
+						 '</div>'+
+						'<div class="layui-form-item layui-form-text">'+
+						    '<label class="layui-form-label">编码</label>'+
+						    '<div class="layui-input-block">'+
+						    '<input type="text" id="code" name="code" required  lay-verify="required" placeholder="请输入编码" autocomplete="off" class="layui-input">'+
+						    '</div>'+
+					  '</div>'+
+					  '<div class="layui-form-item layui-form-text">'+
+						    '<label class="layui-form-label">描述</label>'+
+						    '<div class="layui-input-block">'+
+						    '<input type="text" id="describe" name="describe" required  lay-verify="required" placeholder="请输入描述" autocomplete="off" class="layui-input">'+
+						    '</div>'+
+				  	   '</div>'+
+					'</form>'+
+				'</div>';
+	layer.open({
+	  title: "新增",
+	  area: ['500px', '450px'],
+	  content:html,
+	  yes: function(index, layero){
+		var name = $("#name").val();
+		var code = $("#code").val();
+		var describe = $("#describe").val();
+		if(name==null||name==""){
+			layer.tips("请输入名称","#name");
+			return;
+		}
+		if(code==null||code==""){
+			layer.tips("请输入编码","#code");
+			return false;
+		}
+		if(describe==null||describe==""){
+			layer.tips("请输入描述","#describe");
+			return false;
+		}
+		$.ajax({
+			url:'/private/dictionary/save',
+			type:'POST',
+			dataType:'json',
+			async:false,
+			data:{name:name,code:code,describe:describe},
+			success:function(obj){
+				layer.msg(obj.message);
+				if(obj.success){
+					table.reload('table',null);
+					layer.close(index);
+				}
+			}
+		});
+	  }
+	}); 
+}
+var edit = function(id,name,code,describe){
+	var html = '<div id="edit-div">'+
+				'<form class="layui-form" action="">'+
+					'<div class="layui-form-item">'+
+					    '<label class="layui-form-label">名称</label>'+
+					    '<div class="layui-input-block">'+
+					      '<input type="text" id="name" name="name" required value="'+name+'"  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">'+
+					    '</div>'+
+					 '</div>'+
+					'<div class="layui-form-item layui-form-text">'+
+					    '<label class="layui-form-label">编码</label>'+
+					    '<div class="layui-input-block">'+
+					    '<input type="text" readonly="readonly"  id="code" name="code" required value="'+code+'"  lay-verify="required" placeholder="请输入编码" autocomplete="off" class="layui-input">'+
+					    '</div>'+
+				  '</div>'+
+				  '<div class="layui-form-item layui-form-text">'+
+					    '<label class="layui-form-label">描述</label>'+
+					    '<div class="layui-input-block">'+
+					    '<input type="text" id="describe" name="describe" required  value="'+describe+'" lay-verify="required" placeholder="请输入编码" autocomplete="off" class="layui-input">'+
+					    '</div>'+
+			  	   '</div>'+
+				'</form>'+
+			'</div>';
+	layer.open({
+	  title: "编辑",
+	  area: ['500px', '450px'],
+	  content:html,
+	  success: function(layero, index){
+		  form.render();
+	  },
+	  yes: function(index, layero){
+		var name = $("#name").val();
+		var code = $("#code").val();
+		var describe = $("#describe").val();
+		if(name==null||name==""){
+			layer.tips("请输入名称","#name");
+			return;
+		}
+		if(code==null||code==""){
+			layer.tips("请输入编码","#code");
+			return false;
+		}
+		if(describe==null||describe==""){
+			layer.tips("请输入描述","#describe");
+			return false;
+		}
+		$.ajax({
+			url:'/private/dictionary/save',
+			type:'POST',
+			dataType:'json',
+			async:false,
+			data:{id:id,name:name,code:code,describe:describe},
+			success:function(obj){
+				layer.msg(obj.message);
+				if(obj.success){
+					table.reload('table',null);
+				}
+			}
+		});
+	    layer.close(index);
+	  }
+	}); 
+}
+</script>

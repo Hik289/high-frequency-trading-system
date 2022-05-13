@@ -1,0 +1,156 @@
+<style type="text/css">
+.u{
+	width: 25px;
+    display: inline-block;
+    background-color: #CD4425;
+    height: 25px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    color: white;
+    border-radius: 50%;
+}
+.file_div>span{
+	font-weight: 700;
+    font-size: 22px;
+}
+</style>
+<form class="layui-form" action="" id="form"
+	style="width: 90%; margin-top: 10px;" onsubmit=" return false;">
+	<div class="layui-form-item">
+		<label class="layui-form-label">name</label>
+		<div class="layui-input-block">
+			<input type="hidden" name="id" id="id" data-type="13" value="${(data.id)!}" /> 
+			<input type="text" name="name" id="name" value="${(data.name)!}" lay-verify="required"
+				placeholder="Enter board name" autocomplete="off" class="layui-input" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">Start Date</label>
+		<div class="layui-input-block">
+			<input type="text" name="startTime" id="startTime"autocomplete="new-password" value="${(data.startTime?string('yyyy-MM-dd HH:mm:ss'))!}" lay-verify="required" class="layui-input" placeholder="Enter Start Date" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">End Date</label>
+		<div class="layui-input-block">
+			<input type="text" name="endTime" id="endTime" autocomplete="new-password"value="${(data.endTime?string('yyyy-MM-dd HH:mm:ss'))!}" lay-verify="required" class="layui-input" placeholder="Enter End Date" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">description</label>
+		<div class="layui-input-block">
+			<textarea name="description" lay-verify="required" placeholder="Enter board description" class="layui-textarea">${(data.description)!}</textarea>
+		</div>
+	</div>
+	<#if list.type==1>
+		<div class="layui-form-item">
+			<label class="layui-form-label">Attachments</label>
+			<div class="layui-input-block">
+				<button type="button" class="layui-btn" id="attachments">
+				  <i class="layui-icon">&#xe67c;</i>select file
+				</button>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block" id="file_div">
+				<#if filesList??&& (filesList?size >0)>
+					<#list filesList as list>
+						<div class="file_div">
+							<span>${(list.name)!}</span>
+							<a onclick="deleteFiles(this)">&nbsp;&nbsp;&nbsp;Delete</a>
+							<a href="/download?fileName=${(list.name)!}">&nbsp;&nbsp;&nbsp;Download</a>
+							<input name="fileId" type="hidden" value="${(list.id)!}">
+						</div>
+					</#list>
+				</#if>
+			</div>
+		</div>
+	</#if>
+	<div class="layui-form-item">
+		<div class="layui-input-block"
+			style="margin-left: 0; text-align: center;">
+			<button class="layui-btn" lay-submit="" lay-filter="submit">save</button>
+			<button id="closeOpen" class="layui-btn layui-btn-primary"
+				type="button">cancel</button>
+		</div>
+	</div>
+</form>
+
+<script>
+var form,laydate,upload = null;
+layui.use(['form','laydate','upload'], function () {
+    form = layui.form;
+    laydate = layui.laydate;
+    upload = layui.upload;
+    
+    laydate.render({
+   	  elem: '#startTime'
+   	  ,type: 'datetime'
+   	});
+    laydate.render({
+     	  elem: '#endTime'
+     	  ,type: 'datetime'
+     	});
+    form.render(); 
+    form.verify({
+    	reqSelect : function(value) {
+    		console.log(value);
+            if (value == null || value == "") {
+                return 'required';
+            }
+    	}
+    });
+    //监听提交
+    form.on('submit(submit)', function (data) {
+    	$.ajax({
+    		  type: 'POST',
+    		  url: '/private/board/list/card/save',
+    		  data: $("#form").serialize(),
+    		  success: function(data){
+    			  layer.msg(data.message,function(index){
+    				  console.log(data);
+    				  if(data.success){
+//     					  layer.closeAll();
+    					  //parent.refreshTab();
+    					  window.location.reload(); 
+    				  }
+    				  layer.close(index);
+    			  });
+    		  },
+    		  dataType: "json"
+    	});
+    });
+    
+    upload.render({
+   	  elem: '#attachments'
+   	  ,url: '/upload/'
+   	  ,accept:'file'
+   	  ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+   	    layer.load(); //上传loading
+   	  }
+   	  ,done: function(res, index, upload){
+   	    layer.closeAll('loading'); //关闭loading
+//    	 	console.log("====done====");
+//    	    console.log(res);
+   	    var html = '<div class="file_div"><span>'+res.data['name']+'</span><a onclick="deleteFiles(this)">&nbsp;&nbsp;&nbsp;Delete</a>'
+   	    	+'<a href="/download?fileName='+res.data['name']+'">&nbsp;&nbsp;&nbsp;Download</a>';
+   	    html += '<input name="fileId" value="'+res.data['id']+'" type="hidden"></div>';
+   	    $("#file_div").append(html);
+   	  }
+   	  ,error: function(index, upload){
+   	    layer.closeAll('loading'); //关闭loading
+   	  }
+   	})
+});
+$("#closeOpen").click(function () {
+	layer.closeAll();
+});
+var deleteFiles = function(obj){
+	layer.confirm('confirm to delete?',{title:"message",btn: ['comfirm', 'cancel']}, function(index){
+		$(obj).parent().remove();
+		layer.close(index);
+	});
+}
+</script>
+

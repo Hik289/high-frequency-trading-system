@@ -1,0 +1,75 @@
+<form class="layui-form" action="" id="form"
+	style="width: 90%; margin-top: 10px;" onsubmit=" return false;">
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<h2>Let`s Build a Team</h2>
+			<div>Boost your productivity by making it easier for everone to access boards in one location</div>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">team name</label>
+		<div class="layui-input-block">
+			<input type="hidden" name="id" id="id" data-type="13" value="${(data.id)!}" /> 
+			<input type="text" name="name" id="name" value="${(data.name)!}" lay-verify="required"
+				placeholder="Enter team name" autocomplete="off" class="layui-input" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">team type</label>
+		<div class="layui-input-block">
+			<input type="text" name="type" id="type" value="${(data.type)!}"
+				lay-verify="required" placeholder="Enter team type" autocomplete="off"
+				class="layui-input" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">team description</label>
+		<div class="layui-input-block">
+			<textarea name="description" lay-verify="required" placeholder="Enter team description" class="layui-textarea">${(data.description)!}</textarea>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<div class="layui-input-block"
+			style="margin-left: 0; text-align: center;">
+			<button class="layui-btn" lay-submit="" lay-filter="submit">save</button>
+			<button id="closeOpen" class="layui-btn layui-btn-primary"
+				type="button">cancel</button>
+		</div>
+	</div>
+</form>
+<script>
+var form = null;
+layui.use(['form'], function () {
+    form = layui.form;
+    form.render(); 
+    form.verify({
+    	reqSelect : function(value) {
+    		console.log(value);
+            if (value == null || value == "") {
+                return 'required';
+            }
+    	}
+    });
+    //监听提交
+    form.on('submit(submit)', function (data) {
+    	$.ajax({
+    		  type: 'POST',
+    		  url: '/private/team/save',
+    		  data: $("#form").serialize(),
+    		  success: function(data){
+    			  layer.msg(data.message,function(index){
+    				  if(data.success){
+    					  layer.closeAll();
+    					  refreshTab();
+    				  }
+    				  layer.close(index);
+    			  });
+    		  },
+    		  dataType: "json"
+    	});
+    });
+});
+$("#closeOpen").click(function () {
+	layer.closeAll();
+});
+</script>

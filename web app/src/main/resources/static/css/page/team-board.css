@@ -1,0 +1,27 @@
+.layuimini-content-page{
+	overflow-x:auto;
+}
+
+.layui-col-md12 {
+	margin-top: 10px;
+}
+.layui-panel{
+	display: flex;
+}
+
+.layui-col-md4 {
+	margin: 10px 10px;
+}
+
+.layui-card, .card-header {
+	background-color: #EBECF0;
+}
+
+.layui-card-body {
+	background: white;
+	margin: 10px;
+}
+
+.add-card {
+	border-top: 1px solid #f6f6f6;
+}

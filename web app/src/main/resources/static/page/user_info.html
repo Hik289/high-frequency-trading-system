@@ -1,0 +1,84 @@
+ <div class="layuimini-container layui-anim layui-anim-upbit">
+    <div class="layuimini-main">
+	<form class="layui-form" action="">
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 姓名</label>
+	    <div class="layui-input-block">
+	      <input type="text" name="name" lay-verify="required" value="${(user.name)!}"  autocomplete="off" placeholder="请输入用姓名" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 性别</label>
+	    <div class="layui-input-block">
+	      	<input type="radio" name="sex" value="0" title="男" <#if user.sex??&&user.sex==0>checked</#if>>
+			<input type="radio" name="sex" value="1" title="女"<#if user.sex??&&user.sex==1>checked</#if>>
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 年龄</label>
+	    <div class="layui-input-block">
+	      <input type="number" name="age" lay-verify="required" value="${(user.age)!}" autocomplete="off" placeholder="请输入年龄" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 电话号码</label>
+	    <div class="layui-input-block">
+	      <input type="text" name="phone" lay-verify="required" value="${(user.phone)!}"  autocomplete="off" placeholder="请输入电话号码" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 电话驾龄</label>
+	    <div class="layui-input-block">
+	      <input type="number" name="dage" lay-verify="required" value="${(user.dage)!}" autocomplete="off" placeholder="请输入驾龄" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 车牌号 </label>
+	    <div class="layui-input-block">
+	      <input type="text" name="carNo" lay-verify="required" value="${(user.carNo)!}" autocomplete="off" placeholder="请输入车牌号" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 颜色</label>
+	    <div class="layui-input-block">
+	      <input type="text" name="color" lay-verify="required" value="${(user.color)!}" autocomplete="off" placeholder="请输入颜色" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> 爱好</label>
+	    <div class="layui-input-block">
+	      <input type="text" name="hobby" value="${(user.hobby)!}" autocomplete="off" placeholder="请输入爱好" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <div class="layui-input-block">
+	      <button type="submit" class="layui-btn" lay-submit lay-filter="formDemo">保存</button>
+	    </div>
+	  </div>
+	</form>
+</div>
+</div>
+<script>
+var layer,form;
+layui.use(['layer','form'], function () {
+	layer = layui.layer;
+	form= layui.form;
+	form.render();
+	form.verify({
+		password_2:function(value,item){
+			var password = $("#password").val();
+			if(password !=value){
+				return "确认密码不一致";
+			}
+			return '';
+		}
+	});
+	//监听提交
+  	form.on('submit(formDemo)', function(data){
+    	$.post("/private/user/info/save",data.field,function(obj){
+    		layer.msg(obj.message);
+    	},"json");
+    	return false;
+  	});
+});
+</script>

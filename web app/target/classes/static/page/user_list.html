@@ -1,0 +1,79 @@
+<div class="layuimini-container layui-anim layui-anim-upbit">
+    <div class="layuimini-main">
+        <table class="layui-hide" id="table" lay-filter="currentTableFilter"></table>
+    </div>
+</div>
+<script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-xs" lay-event="edit" data-content-href="page/fees_list.html?id={{d.id}}">缴费信息</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="dell({{d.id}})">删除</a>
+</script>
+<script type="text/html" id="typeDemo">
+{{#  if(d.type ==2){ }}
+    管理员
+  {{#  } else { }}
+   	 普通用户
+  {{#  } }}
+</script>
+<script>
+var form,table;
+layui.use(['form','table'], function(){
+  table = layui.table;
+  form = layui.form;
+	//第一个实例
+  table.render({
+	    elem: '#table'
+	    ,url: '/private/user/list' //数据接口
+	    ,page: true //开启分页
+	    ,cols: [[ //表头
+	       {type: 'numbers', title: '序号', width:80}
+	      ,{field: 'username', title: '用户名'}
+	      ,{field: 'name', title: '姓名'}
+	      ,{field: 'age', title: '年龄' }
+	      ,{field: 'sex', title: '性别',templet:  function(d){
+	    	  if(d.sex == 0){
+	    		  return '男';
+	    	  }
+	        return '女';
+	      }}
+	      ,{field: 'phone', title: '电话' }
+	      ,{field: 'carNo', title: '车牌号' }
+	      ,{field: 'carType', title: '车型' }
+	      ,{field: 'role', title: '用户角色',templet:  function(d){
+	    	  console.log(d);
+	    	  if(d.role!=null){
+	    		  return d.role.roleName;
+	    	  }
+	        return '';
+	      }}
+	      ,{field: 'updateTime', title: '更新时间'}
+	      ,{field: 'lastTime', title: '最近登录时间'}
+	      ,{title: '操作',toolbar: '#barDemo', width:150}
+	    ]]
+	  });
+  getRole();
+});
+//角色数据
+var roleList;
+var getRole = function(){
+	$.post("/private/role/list/list",{},function(obj){
+// 		console.log(obj.data);
+		roleList = obj.data;
+	},"json");
+}
+var dell = function(id){
+	if(confirm(" 确定删除吗？")){
+		$.ajax({
+			url:'/private/user/dell',
+			type:'POST',
+			dataType:'json',
+			data:{id:id},
+			success:function(obj){
+				layer.msg(obj.message);
+				if(obj.success){
+					table.reload('table',null);
+				}
+			}
+		});
+	}
+}
+</script>

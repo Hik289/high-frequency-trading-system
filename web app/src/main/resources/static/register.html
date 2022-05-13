@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Team Work Management</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <style type="text/css">
+    	.div_form{
+    		width: 40%;
+    		margin: auto;
+    		border: 1px solid #70AD47;
+    	}
+	    .line{
+			border: 1px solid #E4E3E3;
+			margin: 20px auto;
+		}
+		form{
+			margin: 20px;
+		}
+		.re_name{
+			text-align: center;
+			font-weight: 600;
+			font-size: 20px;
+			margin: 20px;
+		}
+		.title{
+			text-align: center;
+			margin: 30px;
+		}
+    </style>
+</head>
+<body>
+<div class="title">
+	<h1>RTA</h1>
+</div>
+ <div class="div_form">
+ 	<div class="re_name">register your account</div>
+	<form class="layui-form" action="">
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> username</label>
+	    <div class="layui-input-block">
+	      <input type="text" name="username" lay-verify="required" autocomplete="off" placeholder="Enter user name" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> password</label>
+	    <div class="layui-input-block">
+	      <input type="password" id="password" name="password" autocomplete="new-password" lay-verify="required"  autocomplete="off" placeholder="Enter password" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label"> confirm password</label>
+	    <div class="layui-input-block">
+	      <input type="password" name="password_2" lay-verify="password_2|required"  autocomplete="off" placeholder="Enter confirm password" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <div class="layui-input-block">
+	      <button type="submit" class="layui-btn" lay-submit lay-filter="formDemo">submit</button>
+<!-- 	      <button type="button" class="layui-btn layui-btn-primary" onclick="login()">去登录</button> -->
+	    </div>
+	  </div>
+	  <div class="line"></div>
+	  <div class="layui-form-item">
+	    <div class="layui-input-block" onclick="login()">Go login</div>
+	  </div>
+	</form>
+</div>
+<script src="lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script type="text/javascript" src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script>
+var layer,form;
+layui.use(['layer','form'], function () {
+	layer = layui.layer;
+	form= layui.form;
+	form.verify({
+		password_2:function(value,item){
+			var password = $("#password").val();
+			if(password !=value){
+				return "Confirm passwords are inconsistent";
+			}
+			return '';
+		}
+	});
+	//监听提交
+  	form.on('submit(formDemo)', function(data){
+    	$.post("/register",data.field,function(obj){
+    		layer.msg(obj.message,function(){
+    			if(obj.success){login();}
+    		});
+    	},"json");
+    	return false;
+  	});
+});
+var login = function(){
+	window.location.href = "login.html";
+}
+</script>
+</body>
+</html>

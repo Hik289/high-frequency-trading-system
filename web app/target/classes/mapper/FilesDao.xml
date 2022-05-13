@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.FilesDao">
+	
+	<select id="getListByCard" resultType="com.boot.entity.Files">
+		select * from t_files where card_id=#{cardId} ORDER BY create_time
+	</select>
+	
+	<update id="deletByCard" parameterType="java.lang.Integer">
+		update t_files set card_id =null where card_id=#{cardId} 
+	</update>
+	
+	<update id="addByCard" parameterType="java.lang.Integer">
+		update t_files set card_id =#{cardId} 
+		where 1=1
+		<if test="fileId !=null and fileId.length > 0">
+	      and id in
+	        <foreach collection="fileId" item = "id" open="(" separator="," close=")" index="index">
+	            #{id}
+	        </foreach>
+	    </if>
+	</update>
+</mapper>

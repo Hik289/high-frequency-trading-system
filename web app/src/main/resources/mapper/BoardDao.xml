@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.BoardDao">
+	
+	<insert id="addBoardSave" useGeneratedKeys="true" keyProperty="id"  parameterType="com.boot.entity.Board">
+		insert into t_board(team_id,description,user_id,name,create_time)values(#{teamId},#{description},#{userId},#{name},now())
+	</insert>
+	
+	<select id="getListByTeam" resultType="com.boot.entity.Board">
+		select * from t_board where team_id=#{teamId}
+	</select>
+	
+	
+<!-- 	board list -->
+	<insert id="listSave" parameterType="com.boot.entity.BoardList">
+		insert into t_board_list(board_id,name,create_time,type)values(#{boardId},#{name},now(),#{type})
+	</insert>
+	
+	<select id="getBoardListByBoard" resultType="com.boot.entity.BoardList">
+		select * from t_board_list where board_id=#{boardId} order by create_time asc
+	</select>
+	
+	<select id="getBoardListCard" resultType="com.boot.entity.BoardListCard">
+		select c.*,start_time startTime,end_time endTime from t_board_list_card c where list_id=#{boardListId} ORDER BY create_time
+	</select>
+	
+	
+	<select id="getDetailByid" resultType="com.boot.entity.Board">
+		select b.*,t.name teamName from t_board  b left join t_team t on b.team_id=t.id where b.id=#{boardId}
+	</select>
+	<select id="getBoardListDetailById" resultType="com.boot.entity.BoardList">
+		select * from t_board_list where id=#{listId} 
+	</select>
+</mapper>

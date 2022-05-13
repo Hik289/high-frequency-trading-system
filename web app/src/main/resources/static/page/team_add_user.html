@@ -1,0 +1,72 @@
+<style>
+<!--
+.layui-anim-upbit{
+	height: 200px;
+    overflow-y: auto;
+}
+-->
+</style>
+<form class="layui-form" action="" id="form"
+	style="width: 90%; margin-top: 10px;" onsubmit=" return false;">
+	<div class="layui-form-item">
+		<label class="layui-form-label">user</label>
+		<input name="teamId" id="teamId" value="${(teamId)!}" type="hidden">
+		<div class="layui-input-block">
+			<select name="userId" id ="userId" lay-verify="required" >
+			 <option value=""></option>
+			 <#if userList??>
+			 	<#list userList as list>
+			 		<option value="${(list.id)!}">${(list.username)!}</option>
+			 	</#list>
+			 </#if>
+			</select>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<div class="layui-input-block"
+			style="margin-left: 0; text-align: center;">
+			<button class="layui-btn" lay-submit="" lay-filter="submit">confirm</button>
+			<button id="closeOpen" class="layui-btn layui-btn-primary"
+				type="button">cancel</button>
+		</div>
+	</div>
+</form>
+<script>
+var form = null;
+layui.use(['form','dropdown'], function () {
+    form = layui.form;
+    var dropdown = layui.dropdown
+    form.render(); 
+    form.verify({
+    	reqSelect : function(value) {
+    		console.log(value);
+            if (value == null || value == "") {
+                return 'required';
+            }
+    	}
+    });
+    //监听提交
+    form.on('submit(submit)', function (data) {
+    	$.ajax({
+    		  type: 'POST',
+    		  url: '/private/team/addTeamUser/save',
+    		  data: $("#form").serialize(),
+    		  success: function(data){
+    			  layer.msg(data.message,function(index){
+    				  console.log(data);
+    				  if(data.success){
+    					  layer.closeAll();
+    					  //parent.refreshTab();
+    					  window.location.reload(); 
+    				  }
+    				  layer.close(index);
+    			  });
+    		  },
+    		  dataType: "json"
+    	});
+    });
+});
+$("#closeOpen").click(function () {
+	layer.closeAll();
+});
+</script>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="css/zplayer.min.css" />
+		<script type="text/javascript" src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="js/zplayer.min.js" ></script>
+		<title>播放器</title>
+		
+		<style type="text/css">
+			body{
+				background-image: url("images/bg.jpg");
+			}
+			.zplayer-list{
+				height: 400px;
+			}
+			.zplayer-content{
+				height: 110px;
+			}
+			.zplayer-lrc-current{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="width:60%;height: 100%;margin: auto;margin-top: 9%;">
+			<div id="player1"></div>
+		</div>
+		<script>
+			var musics = [];
+			musics.push({title:'',author:'',pic:'images/d.jpg',url:''});
+			$.post("mainProgram",{},function(obj){
+				console.log(obj.data);
+				if(obj!=null&&obj.data!=null&&obj.data.length>0){
+					musics = [];
+					for(var i=0;i<obj.data.length;i++){
+						console.log(obj.data[i]);
+						musics.push({title:obj.data[i][0],author:obj.data[i][0],pic:'images/d.jpg',url:'getFile/'+obj.data[i][1]});
+					}
+				}
+				var zp1 = new zplayer({
+			        element: document.getElementById("player1"),
+			        autoPlay: 1,/*是否开启自动播放,默认false*/
+			        lrcStart: 1,/*是否开启歌词功能 ，默认false（为true时musics集合中需要传入lrc字段。）*/
+			        showLrc: 1,/*开启歌词功能后是否展示歌词内容 ，默认false*/
+			        listMaxHeight:500, /*列表最大高度，默认240*/
+			        musics:musics
+			    })
+				zp1.init();
+			},'json');
+		</script>
+	</body>
+</html>

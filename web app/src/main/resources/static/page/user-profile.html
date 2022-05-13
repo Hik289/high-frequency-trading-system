@@ -1,0 +1,125 @@
+<style>
+	.team_img{
+		width: 30px;
+	    height: 30px;
+	    background: red;
+	    border-radius: 20px;
+	    line-height: 30px;
+	    text-align: center;
+	    vertical-align: middle;
+	    color: white;
+	}
+	.team_name{
+		line-height: 30px;
+	}
+</style>
+<div class="layuimini-main">
+    <div class="page-main">
+       	<div class="main_title">
+       		<div class="team_img">
+       			U
+       		</div>
+       		<div class="team_name">
+       			admin
+       		</div>
+       		<div style="clear: both;"></div>
+       	</div>
+		<div class="layui-tab">
+		  <ul class="layui-tab-title">
+		    <li class="layui-this">Profile</li>
+		    <li>Team</li>
+		  </ul>
+		  <div class="layui-tab-content">
+		    <div class="layui-tab-item layui-show">
+				<form class="layui-form" action="" onsubmit="return false;">
+				  <div class="layui-form-item">
+				    <label class="layui-form-label">name</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="name" id="name" lay-verify="title" autocomplete="off" placeholder="name" class="layui-input">
+				    </div>
+				  </div>
+				  <div class="layui-form-item">
+				    <label class="layui-form-label">Bio</label>
+				    <div class="layui-input-block">
+				    	<textarea placeholder="Bio" id="bio" class="layui-textarea"></textarea>
+				    </div>
+				  </div>
+				  
+				  <div class="layui-form-item">
+				    <div class="layui-input-block">
+				      <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">save</button>
+				    </div>
+				  </div>
+			 	 </form>
+		    </div>
+		    <div class="layui-tab-item">
+		    	<div style="text-align: right;"><button type="button" class="layui-btn layui-btn-sm" onclick="addTeam();">Create Team</button></div>
+		    	<table class="layui-table" lay-skin="line">
+				  <tbody id="team_list">
+				    <!-- <tr onclick="goUrl('')">
+				      <td>team1</td>
+				    </tr> -->
+				  </tbody>
+				</table>  
+		    </div>
+		  </div>
+		</div>
+     </div>
+</div>
+<script>
+var username = $.cookie("username");
+$(".team_name").text(username);
+layui.use(['form','layuimini'], function () {
+    var form = layui.form,
+        layer = layui.layer,
+        layuimini = layui.layuimini;
+    form.render();
+    //获取基本信息
+    getInfo();
+    //获取team信息
+    getTeams();
+    //保存
+    form.on('submit(demo1)', function (data) {
+    	var name = $("#name").val();
+    	var bio = $("#bio").val();
+    	$.post("/private/user/infoupdate",{name:name,bio:bio},function(obj){
+    		layer.msg(obj.message);
+    	},"json");
+    });
+});
+var getInfo = function(){
+	$.post("/private/user/info",{},function(obj){
+		if(obj.success){
+			$("#name").val(obj.data.name);
+			$("#bio").val(obj.data.bio);
+		}
+	},"json");
+}
+var getTeams = function(){
+	$.post("/private/team/list",{},function(obj){
+		console.log(obj);
+		if(obj.success){
+			if(obj.data!=null&&obj.data.length>0){
+				var html = "";
+				for(var d of obj.data){
+					console.log(d);
+					html +="<tr onclick='goUrl(\"/index?teamId="+d.id+"\")'><td>"+d.name+"</td></tr>";
+				}
+				$("#team_list").html(html);
+			}
+		}
+	},"json");
+}
+//add
+var addTeam = function(){
+	$.post('/private/team/add', {}, function(str){
+	  layer.open({
+	    type: 1,
+	    title:"add team",
+	    offset: '80px',
+	    area: ['800px', '500px'],
+	    content: str 
+	  });
+	}); 
+}
+</script>

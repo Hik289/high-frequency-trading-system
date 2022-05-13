@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Team Work Management</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="css/layuimini.css" media="all">
+    <link rel="stylesheet" href="css/public.css" media="all">
+    <link rel="stylesheet" href="css/index.css" media="all">
+    <link rel="stylesheet" href="lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+</head>
+<body class="layui-layout-body layuimini-all">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header header">
+        <div class="layui-logo">
+        	<h1 style="margin-left: 0px;font-size: 18px;">RTA</h1>
+        </div>
+        <ul class="layui-nav layui-layout-left layui-header-menu layui-header-pc-menu mobile layui-hide-xs">
+        	<li class="layui-nav-item layui-this" style="display: none" id="currencyHeaderId" data-menu="currency"> <a href="javascript:;"><i class="fa fa-address-book"></i> 菜单</a> </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+        	<li class="layui-nav-item" lay-unselect>
+                <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
+            </li>
+            <li class="layui-nav-item layuimini-setting">
+                <a href="javascript:;" id="username">admin</a>
+                <dl class="layui-nav-child">
+                	<dd>
+                        <a href="javascript:;" data-content-href="page/user-profile.html" data-title="Profile" data-icon="fa fa-gears">Profile</a>
+                    </dd>
+                	<!-- <dd>
+                        <a href="javascript:;" onclick="qiehuan();" data-title="Team" data-icon="fa fa-gears">Team</a>
+                    </dd> -->
+                    <dd>
+                        <a href="javascript:;" class="login-out">Log out</a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-body">
+        <div class="layuimini-content-page">
+        	<div class="page-main">
+	        	<div class="main_title">
+	        		<div class="team_img">
+	        			<img class="layui-upload-img" id="demo1" src="/images/team.png">
+	        		</div>
+	        		<div class="team_name">
+	        			${(team.name)!}
+	        			<br>
+	        			Edit Team message
+	        		</div>
+	        		
+	        		<div style="clear: both;"></div>
+	        	</div>
+				<div class="layui-tab">
+				  <ul class="layui-tab-title">
+				    <li class="layui-this">Board</li>
+				    <li>Team Members</li>
+				  </ul>
+				  <div class="layui-tab-content">
+				    <div class="layui-tab-item layui-show">
+				      <div><button type="button" class="layui-btn layui-btn-sm" onclick="addBoard('${(team.id)!}');">Add Board</button></div>
+				      <!-- <div class="page_kanban">
+				      	看板
+				      </div> -->
+				      <#if boardList??&& ( boardList?size > 0)>
+					  	<#list boardList as list>
+						  	<div class="page_kanban" onclick="board('${(list.id)!}');">
+						      	${(list.name)!}
+						    </div>
+					  	</#list>
+					  </#if>
+				    </div>
+				    <div class="layui-tab-item">
+				    	<div style="text-align: right;"><button type="button" class="layui-btn layui-btn-sm" onclick="addTeamUser('${(team.id)!}');">Invite Team Members</button></div>
+				    	<table class="layui-table" lay-skin="line">
+						  <colgroup>
+						  	<col>
+						    <col width="200">
+						  </colgroup>
+						  <tbody>
+						  <#if userList??&& (userList?size > 0)>
+						  	<#list userList as list>
+							  	<tr>
+							      <td>${(list.username)!}</td>
+							      <td onclick="removeUser('${(list.id)!}','${(team.id)!}');">Remove</td>
+							    </tr>
+						  	</#list>
+						  </#if>
+						  </tbody>
+						</table>  
+				    </div>
+				  </div>
+				</div>
+        	</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script src="lib/layui-v2.5.5/layui.js?v=1.0.4" charset="utf-8"></script>
+<script src="js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script src="js/index.js" charset="utf-8"></script>
+</body>
+</html>

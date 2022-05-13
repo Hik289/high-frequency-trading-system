@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.UserDao">
+	<select id="feesEchart"  resultType="map">
+		select m.name,sum(m.money)money from (
+			select d.name,f.money from t_fees f left join t_dictionary d on d.id=f.dict)m
+				group by m.name
+	</select>
+	<select id="feesEchartTimeUser"  resultType="map">
+		select date,count(1)count from(
+			select DATE_FORMAT(u.create_time,'%Y-%m-%d')date,u.id from t_user u left join t_role r on r.id=u.role_id 
+				where r.role_code='ROLE_USER')m group by date ORDER BY date desc
+	</select>
+	
+	<select id="myFeesEchart"  resultType="map">
+		select m.name,sum(m.money)money from (
+			select d.name,f.money from t_fees f left join t_dictionary d on d.id=f.dict
+				where f.user_id= #{userId})m
+				group by m.name
+	</select>
+</mapper>

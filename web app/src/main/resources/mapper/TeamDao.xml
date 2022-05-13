@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.TeamDao">
+	
+	<select id="getList" resultType="com.boot.entity.Team">
+<!-- 		select * from t_team where user_id=#{userId} -->
+		select * from t_team where user_id = #{userId}
+		union
+		select t.* from t_team_user tu left join t_team t on tu.team_id = t.id
+		where tu.user_id= #{userId} order by create_time desc
+	</select>
+	
+	<select id="getDeatil" resultType="com.boot.entity.Team">
+		select * from t_team where id=#{teamId}
+	</select>
+	
+	<select id="getTeamUser" resultType="com.boot.entity.User">
+		select u.* from t_team_user tu 
+		LEFT JOIN t_user u on u.id = tu.user_id
+		where tu.team_id=#{teamId}
+	</select>
+	
+	<select id="countByTeamUser" resultType="int">
+		select count(1) from t_team_user where team_id=#{teamId} and user_id=#{userId}
+	</select>
+	
+	<insert id="insertTeamUser" parameterType="int">
+		insert into t_team_user(team_id,user_id)values(#{teamId},#{userId})
+	</insert>
+	
+	<select id="getTeamDefault" resultType="com.boot.entity.Team">
+<!-- 		select * from t_team where user_id=#{userId} order by create_time limit 1 -->
+		select * from t_team where user_id = #{userId}
+		union
+		select t.* from t_team_user tu left join t_team t on tu.team_id = t.id
+		where tu.user_id= #{userId} order by create_time desc limit 1 
+	</select>
+	
+	<update id="removeUser"  parameterType="int">
+		delete from t_team_user where team_id=#{teamId} and user_id=#{userId}
+	</update>
+</mapper>

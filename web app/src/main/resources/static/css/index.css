@@ -1,0 +1,55 @@
+.layui-body {
+	left: 0px;
+}
+
+.layui-layout-admin .layui-logo {
+	width: 100px;
+}
+
+.layuimini-setting {
+	margin-right: 50px;
+}
+
+.layuimini-content-page {
+	background-color: white !important;
+}
+
+.page-main {
+	background-color: white !important;
+	width: 60%;
+	margin: auto;
+	height: 100%;
+}
+
+.page_kanban {
+	width: 100px;
+	height: 100px;
+	background-color: #4472C4;
+	line-height: 100px;
+	vertical-align: middle;
+	text-align: center;
+	color: white;
+}
+
+.layui-upload-img {
+	width: 40px;
+}
+
+.main_title {
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+.team_name {
+	display: inline-block;
+	margin-left: 20px;
+}
+
+.team_img, .team_name {
+	float: left;
+}
+
+.page_kanban {
+	display: inline-block;
+	margin: 20px;
+}

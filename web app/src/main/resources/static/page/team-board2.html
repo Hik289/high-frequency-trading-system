@@ -1,0 +1,87 @@
+<style>
+	.layui-col-md12{
+ 		margin-top: 10px;
+	}
+	.layui-col-md4{
+		margin: auto 10px;
+	}
+	.layui-card,.card-header{
+		background-color: #EBECF0;
+	}
+	.layui-card-body{
+		background: white;
+		margin: 10px;
+	}
+	.add-card{
+		border-top: 1px solid #f6f6f6;
+	}
+</style>
+<div class="layuimini-main">
+	<div class="page-main">
+		<button type="button" class="layui-btn layui-btn-primary">Board</button>
+		<button type="button" class="layui-btn layui-btn-primary">Team name</button>
+		<div class="layui-col-md12">
+			<div class="layui-panel">
+				<!-- <div class="layui-col-md4">
+					<div class="layui-card">
+						<div class="layui-card-header card-header">card</div>
+						<div class="card-list">
+							<div class="layui-card-body">
+								卡片式面板面板通常用于非白色背景色的主体内
+								<br> 从而映衬出边框投影
+							</div>
+							<div class="layui-card-body">
+								卡片式面板面板通常用于非白色背景色的主体内
+								<br> 从而映衬出边框投影
+							</div>
+							<div class="layui-card-body">
+								卡片式面板面板通常用于非白色背景色的主体内
+								<br> 从而映衬出边框投影
+							</div>
+						</div>
+						<div class="layui-card-header add-card">+ Add Other Card</div>
+					</div>
+				</div> -->
+			</div>
+			<button type="button" class="layui-btn layui-btn-primary" onclick="AddList()">+ Add another list</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+var boardId =  getUrlParam("boardId");
+layui.use(['form','layuimini'], function () {
+    var form = layui.form,
+        layer = layui.layer,
+        layuimini = layui.layuimini;
+    form.render();
+});
+var AddList = function(){
+	layer.open({
+	    title:"Add another list",
+	    btn: ['confirm', 'cancel'],
+	    btnAlign: 'c',
+	    offset: '80px',
+	    area: ['400px', '200px'],
+	    content: '<input type="text" name="name" id="name" required  lay-verify="required" placeholder="name" autocomplete="off" class="layui-input">'
+    	,yes: function(index, layero){
+    	    //按钮【按钮一】的回调
+    	    var name = $("#name").val();
+    	    if(name==null || name==""){
+    	    	layer.msg("enter name");
+    	    	return false;
+    	    }
+    	    $.post("/private/board/list/save",{boardId:boardId,name:name},function(data){
+    	    	layer.msg(data.message,function(){
+    	    	  if(data.success){
+  					  layer.closeAll();
+  					  refreshTab();
+  				  }
+  				  layer.close(index);
+    	    	});
+    	    });
+    	 }
+	    ,cancel: function(){ 
+	    }
+	  });
+}
+</script>

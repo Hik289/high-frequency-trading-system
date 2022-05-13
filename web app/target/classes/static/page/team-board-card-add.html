@@ -1,0 +1,163 @@
+<form class="layui-form" action="" id="form"
+	style="width: 90%; margin-top: 10px;" onsubmit=" return false;">
+	<div class="layui-form-item">
+		<label class="layui-form-label">name</label>
+		<div class="layui-input-block">
+			<input type="hidden" name="listId" data-type="13" value="${(listId)!}" /> 
+			<input type="text" name="name" id="name"  lay-verify="required"
+				placeholder="Enter board name" autocomplete="off" class="layui-input" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">Start Date</label>
+		<div class="layui-input-block">
+			<input type="text" name="startTime" id="startTime" value="" autocomplete="off" lay-verify="required" class="layui-input" placeholder="Enter Start Date" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">End Date</label>
+		<div class="layui-input-block">
+			<input type="text" name="endTime" id="endTime"  value="" autocomplete="off" lay-verify="required" class="layui-input" placeholder="Enter End Date" />
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<div class="layui-input-block"
+			style="margin-left: 0; text-align: center;">
+			<button class="layui-btn" lay-submit="" lay-filter="submit">save</button>
+			<button id="closeOpen" class="layui-btn layui-btn-primary"
+				type="button">cancel</button>
+		</div>
+	</div>
+</form>
+
+<script>
+var form,laydate,upload = null;
+layui.use(['form','laydate','upload'], function () {
+    form = layui.form;
+    laydate = layui.laydate;
+    upload = layui.upload;
+    
+    laydate.render({
+   	  elem: '#startTime'
+   	  ,type: 'datetime'
+   	});
+    laydate.render({
+     	  elem: '#endTime'
+     	  ,type: 'datetime'
+     	});
+    form.render(); 
+    form.verify({
+    	reqSelect : function(value) {
+    		console.log(value);
+            if (value == null || value == "") {
+                return 'required';
+            }
+    	}
+    });
+    //监听提交
+    form.on('submit(submit)', function (data) {
+    	$.ajax({
+    		  type: 'POST',
+    		  url: '/private/board/list/card/save',
+    		  data: $("#form").serialize(),
+    		  success: function(data){
+    			  layer.msg(data.message,function(index){
+    				  console.log(data);
+    				  if(data.success){
+    					  layer.closeAll();
+    					  //parent.refreshTab();
+    					  window.location.reload(); 
+    				  }
+    				  layer.close(index);
+    			  });
+    		  },
+    		  dataType: "json"
+    	});
+    });
+    
+    upload.render({
+   	  elem: '#attachments'
+   	  ,url: '/upload/'
+   	  ,accept:'file'
+   	  ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+   	    layer.load(); //上传loading
+   	  }
+   	  ,done: function(res, index, upload){
+   	    layer.closeAll('loading'); //关闭loading
+//    	 	console.log("====done====");
+//    	    console.log(res);
+   	    var html = '<div class="file_div"><span>'+res.data['name']+'</span><a onclick="deleteFiles(this)">&nbsp;&nbsp;&nbsp;Delete</a>';
+   	    html += '<input name="fileId" value="'+res.data['id']+'" type="hidden"></div>';
+   	    $("#file_div").append(html);
+   	  }
+   	  ,error: function(index, upload){
+   	    layer.closeAll('loading'); //关闭loading
+   	  }
+   	})
+});
+$("#closeOpen").click(function () {
+	layer.closeAll();
+});
+var deleteFiles = function(obj){
+	layer.confirm('confirm to delete?',{title:"message",btn: ['comfirm', 'cancel']}, function(index){
+		$(obj).parent().remove();
+		layer.close(index);
+	});
+}
+var saveComment = function(){
+	var comment = $("#comment").val()
+	var cardId = $("#id").val();
+	if(comment!=null&&comment!=""){
+		$.post("/private/board/list/card/cardComment/save",{comment:comment,cardId:cardId},function(obj){
+			layer.msg(obj.message,function(index2){
+				if(obj.success){
+					 $("#comment").val("")
+					layer.close(index2);
+				}
+			});
+		});
+	}
+}
+var deleteComment = function(commentId,objThis){
+	layer.confirm('confirm to delete?',{title:"message",btn: ['comfirm', 'cancel']}, function(index){
+		$.post("/private/board/list/card/cardComment/delete",{commentId:commentId},function(obj){
+			layer.msg(obj.message,function(index2){
+				if(obj.success){
+					$(objThis).parent().parent().remove();
+					layer.close(index2);
+				}
+			});
+		});
+	});
+}
+var editComment = function(commentId){
+	var comment = $("#"+commentId).text();
+	layer.open({
+	    title:"edit comment",
+	    btn: ['confirm', 'cancel'],
+	    btnAlign: 'c',
+	    offset: '80px',
+	    area: ['400px', '200px'],
+	    content: '<input type="text" name="comment" id="commentEdit" value="'+comment+'" required  lay-verify="required" placeholder="comment" autocomplete="off" class="layui-input">'
+    	,yes: function(index, layero){
+    	    //按钮【按钮一】的回调
+    	    var comment = $("#commentEdit").val();
+    	    if(comment==null || comment==""){
+    	    	layer.msg("enter comment");
+    	    	return false;
+    	    }
+    	    $.post("/private/board/list/card/cardComment/update",{commentId:commentId,comment:comment},function(data){
+    	    	layer.msg(data.message,function(index2){
+    	    	  if(data.success){
+    	    		  $("#"+commentId).text(comment);
+  				  }
+  				  layer.close(index2);
+    	    	});
+    	    });
+    	 }
+	    ,cancel: function(){ 
+	    }
+	  });
+}
+</script>
+

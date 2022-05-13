@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.BoardListCardDao">
+	<resultMap type="com.boot.entity.BoardListCard" id="resultMap">
+		<id property="id" column="id" />
+		
+		<result property="listId" column="list_id" />
+		<result property="description" column="description" />
+		<result property="dueTime" column="due_time" />
+		<result property="attachments" column="attachments" />
+		<result property="attachmentsStatus" column="attachments_status" />
+		
+		<result property="createTime" column="create_time" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+	</resultMap>
+	
+	<insert id="save" parameterType="com.boot.entity.BoardListCard">
+		insert into t_board_list_card(list_id,name,description,create_time,start_time,end_time)
+		values(#{listId},#{name},#{description},now(),#{startTime},#{endTime})
+	</insert>
+	
+	<update id="update" parameterType="com.boot.entity.BoardListCard">
+		update t_board_list_card set
+			name = #{name},
+			description = #{description},
+			start_time =#{startTime},
+			end_time =#{endTime}
+			
+		where id=#{id}
+	</update>
+	
+	<select id="getDetailById" resultMap="resultMap">
+		select * from t_board_list_card where id=#{cardId}
+	</select>
+</mapper>
